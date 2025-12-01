@@ -32,7 +32,8 @@ import {
     Truck,
     Palette,
     DollarSign,
-    Percent
+    Percent,
+    Calendar
 } from 'lucide-react';
 import { generateQuotePDF } from '../services/pdfGenerator';
 
@@ -420,21 +421,41 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
             </div>
              <div>
               <label className={labelClass}>Quote Date</label>
-              <input 
-                  type="date" 
-                  className={getInputClass(false)}
-                  value={quoteInputs.date}
-                  onChange={(e) => handleGlobalChange('date', e.target.value)}
-              />
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><Calendar size={16} /></span>
+                <input 
+                    type="date" 
+                    className={`pl-12 ${getInputClass(false)}`}
+                    value={quoteInputs.date}
+                    onChange={(e) => handleGlobalChange('date', e.target.value)}
+                    onClick={(e) => {
+                        try {
+                            e.currentTarget.showPicker?.();
+                        } catch (err) {
+                            console.debug('Date picker programmatic open failed', err);
+                        }
+                    }}
+                />
+              </div>
             </div>
              <div>
               <label className={labelClass}>Expire Date</label>
-              <input 
-                  type="date" 
-                  className={getInputClass(false)}
-                  value={quoteInputs.expireDate}
-                  onChange={(e) => handleGlobalChange('expireDate', e.target.value)}
-              />
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><Calendar size={16} /></span>
+                <input 
+                    type="date" 
+                    className={`pl-12 ${getInputClass(false)}`}
+                    value={quoteInputs.expireDate}
+                    onChange={(e) => handleGlobalChange('expireDate', e.target.value)}
+                    onClick={(e) => {
+                        try {
+                            e.currentTarget.showPicker?.();
+                        } catch (err) {
+                            console.debug('Date picker programmatic open failed', err);
+                        }
+                    }}
+                />
+              </div>
             </div>
              <div className="md:col-span-2">
               <label className={labelClass}>Quote By</label>
