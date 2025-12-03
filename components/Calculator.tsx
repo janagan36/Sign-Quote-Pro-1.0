@@ -32,7 +32,8 @@ import {
     Percent,
     LayoutTemplate,
     PenTool,
-    Edit
+    Edit,
+    MessageCircle
 } from 'lucide-react';
 import { generateQuotePDF } from '../services/pdfGenerator';
 import GlassDatePicker from './GlassDatePicker';
@@ -77,8 +78,9 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
     clientAddress: '',
     clientContact: '',
     date: getToday(),
-    expireDate: getFutureDate(30),
+    expireDate: getFutureDate(7),
     quoteBy: '',
+    subject: '',
     showAreaInPDF: true,
     pdfTemplate: 'modern',
     items: [],
@@ -356,10 +358,62 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
   const resetForm = (e: React.MouseEvent) => { 
     e.preventDefault();
     if (window.confirm("Are you sure you want to reset everything? All current data will be lost.")) {
-        setTimeout(() => {
-            window.location.reload();
-        }, 100);
+        setQuoteInputs({
+            serialNumber: generateSerial(),
+            clientName: 'Valued Customer',
+            clientAddress: '',
+            clientContact: '',
+            date: getToday(),
+            expireDate: getFutureDate(7),
+            quoteBy: '',
+            subject: '',
+            showAreaInPDF: true,
+            pdfTemplate: 'modern',
+            items: [],
+            installationNeeded: false,
+            installationCost: 0,
+            transportationNeeded: false,
+            transportationCost: 0,
+            artWorkCost: 500,
+            discount: 0,
+            discountType: 'fixed'
+        });
+        setCurrentSign({
+            category: SignCategory.SSWOL,
+            subType: SIGN_TYPES_HIERARCHY[SignCategory.SSWOL][0],
+            width: 0,
+            height: 0,
+            offCutSqFt: 0,
+            giStandQty: 0,
+            giPipeSize: PIPE_SIZES[0],
+            angleSupportQty: 0,
+            concreteBaseQty: 0,
+            concreteBaseRate: pricing.others.concreteBaseUnit,
+        });
+        setManualItem({ description: '', qty: 1, rate: 0 });
+        setGrandTotal({
+             itemsSubtotal: 0, installationCost: 0, transportationCost: 0, artWorkCost: 0,
+             subTotalBeforeDiscount: 0, discountAmount: 0, finalTotal: 0
+        });
     }
+  };
+
+  const handleWhatsApp = () => {
+      let phone = quoteInputs.clientContact.replace(/[^0-9]/g, '');
+      if (!phone) {
+          alert("Please enter a valid Client Contact number first.");
+          return;
+      }
+      
+      // Auto-format for Sri Lanka if starts with 0
+      if (phone.startsWith('0')) {
+          phone = '94' + phone.substring(1);
+      }
+
+      const text = `Hello ${quoteInputs.clientName},\n\nPlease find the attached quotation regarding ${quoteInputs.subject || 'your signage requirement'}.\n\nRef: ${quoteInputs.serialNumber}\n\nThank you,\nWaytoogo Industries`;
+      
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
   };
   
   // --- STYLES (UPDATED FOR HIGH CONTRAST LIGHT MODE) ---
@@ -461,6 +515,20 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
                   placeholder="Phone Number"
                 />
               </div>
+            </div>
+
+            <div className="md:col-span-2">
+                <label className={labelClass}>Subject</label>
+                <div className="relative">
+                    <span className={iconContainerClass}><FileText size={18} /></span>
+                    <input 
+                        type="text" 
+                        value={quoteInputs.subject || ''}
+                        onChange={(e) => handleGlobalChange('subject', e.target.value)}
+                        className={getInputClass(false)}
+                        placeholder="Quote Subject (e.g. Signage for New Branch)"
+                    />
+                </div>
             </div>
 
             <div className="z-50">
@@ -1013,6 +1081,20 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
                 <FileText className="text-blue-600 dark:text-blue-500" size={24} />
                 Quote Summary
             </h2>
+            
+            {/* Template Selector */}
+            <div className="mb-6 z-50 relative">
+                <GlassSelect 
+                    label="PDF Template"
+                    value={quoteInputs.pdfTemplate}
+                    options={[
+                        { label: 'Modern (Blue)', value: 'modern' },
+                        { label: 'Corporate (Slate)', value: 'corporate' },
+                        { label: 'Minimal (BW)', value: 'minimal' },
+                    ]}
+                    onChange={(val) => handleGlobalChange('pdfTemplate', val)}
+                />
+            </div>
 
             <div className="space-y-4 mb-8">
                 <div className="flex justify-between text-sm text-slate-600 dark:text-slate-400">
@@ -1062,27 +1144,6 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
                 </div>
             </div>
             
-            <div className="mb-6">
-                <label className={labelClass}>PDF Template</label>
-                <div className="grid grid-cols-3 gap-2 mt-2">
-                    {['modern', 'corporate', 'minimal'].map(t => (
-                        <button
-                            key={t}
-                            onClick={() => handleGlobalChange('pdfTemplate', t)}
-                            className={`
-                                py-2 px-1 rounded-lg text-xs font-bold capitalize border transition-all
-                                ${quoteInputs.pdfTemplate === t 
-                                    ? 'border-blue-500 bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' 
-                                    : 'border-slate-200 dark:border-white/5 bg-white/50 dark:bg-white/5 text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10'
-                                }
-                            `}
-                        >
-                            {t}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
             <div className="space-y-3">
                 <button
                     onClick={() => generateQuotePDF(quoteInputs, grandTotal, pricing)}
@@ -1090,6 +1151,14 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
                 >
                     <FileText size={20} />
                     Download PDF Quote
+                </button>
+
+                <button
+                    onClick={handleWhatsApp}
+                    className="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg shadow-green-500/30 flex items-center justify-center gap-2 transition-transform active:scale-95"
+                >
+                    <MessageCircle size={20} />
+                    Open WhatsApp (Attach PDF)
                 </button>
 
                 <button

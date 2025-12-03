@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PricingConfig, PIPE_SIZES, SignCategory } from '../types';
 import { SIGN_TYPES_HIERARCHY, DEFAULT_PRICING } from '../constants';
-import { Save, AlertCircle, Hammer, Box, RotateCcw, Truck, LayoutTemplate } from 'lucide-react';
+import { Save, AlertCircle, Hammer, Box, RotateCcw, Truck, LayoutTemplate, Layers } from 'lucide-react';
 
 interface AdminPanelProps {
   currentPricing: PricingConfig;
@@ -233,35 +233,54 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
             <div className="max-w-3xl mx-auto space-y-6">
                 <div className="bg-white/50 dark:bg-white/5 p-8 rounded-xl border border-slate-200/50 dark:border-white/5 shadow-sm">
                     <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-slate-200/50 dark:border-white/5">
-                        <Box size={22} className="text-blue-600 dark:text-blue-400" />
-                        Other / Extra Rates
+                        <LayoutTemplate size={22} className="text-blue-600 dark:text-blue-400" />
+                        Other Costs
                     </h3>
-                    <div className="space-y-4">
-                        {[
-                            { label: 'Off-Cut Charge', sub: 'Price per sq.ft', key: 'offCutPerSqFt' },
-                            { label: 'Angle Iron Support', sub: 'Price per unit', key: 'angleSupportUnit' },
-                            { label: 'Concrete Base', sub: 'Price per unit', key: 'concreteBaseUnit' }
-                        ].map(item => (
-                            <div key={item.key} className="flex items-center justify-between p-5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-transparent">
-                                <div>
-                                    <label className="font-bold text-slate-700 dark:text-slate-300 block">{item.label}</label>
-                                    <span className="text-sm text-slate-500">{item.sub}</span>
-                                </div>
-                                <div className="relative w-48">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">{pricing.currencySymbol}</span>
-                                    <input
-                                        type="number"
-                                        value={pricing.others[item.key as keyof typeof pricing.others]}
-                                        onChange={(e) => handleDeepChange('others', item.key, e.target.value)}
-                                        className={inputClass}
-                                    />
-                                </div>
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Off-Cut Rate</label>
+                            <span className="text-xs text-slate-500 mb-3 block">Price per sq. ft waste</span>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">{pricing.currencySymbol}</span>
+                                <input
+                                    type="number"
+                                    value={pricing.others.offCutPerSqFt}
+                                    onChange={(e) => handleDeepChange('others', 'offCutPerSqFt', e.target.value)}
+                                    className={inputClass}
+                                />
                             </div>
-                        ))}
+                        </div>
+                        <div>
+                            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Angle Support Rate</label>
+                            <span className="text-xs text-slate-500 mb-3 block">Price per unit</span>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">{pricing.currencySymbol}</span>
+                                <input
+                                    type="number"
+                                    value={pricing.others.angleSupportUnit}
+                                    onChange={(e) => handleDeepChange('others', 'angleSupportUnit', e.target.value)}
+                                    className={inputClass}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Concrete Base Rate (Default)</label>
+                            <span className="text-xs text-slate-500 mb-3 block">Price per base</span>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">{pricing.currencySymbol}</span>
+                                <input
+                                    type="number"
+                                    value={pricing.others.concreteBaseUnit}
+                                    onChange={(e) => handleDeepChange('others', 'concreteBaseUnit', e.target.value)}
+                                    className={inputClass}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         )}
+
       </div>
     </div>
   );

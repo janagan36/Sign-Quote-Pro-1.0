@@ -1,3 +1,4 @@
+
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { QuoteInputs, PricingConfig, GrandTotalResult, QuoteItem, SignCategory } from '../types';
@@ -63,21 +64,21 @@ export const generateQuotePDF = (
     doc.setFillColor(theme.primaryColor[0], theme.primaryColor[1], theme.primaryColor[2]);
     doc.rect(0, 0, pageWidth, 5, 'F');
     
-    // Company Name (Moved up to avoid overlap)
+    // Company Name (Top Left)
     doc.setFont(theme.font, "bold");
-    doc.setFontSize(18); 
+    doc.setFontSize(18); // Reduced to prevent overlap
     setTextColor(theme.secondaryColor);
     doc.text(COMPANY_DETAILS.name, 20, 20);
 
-    // QUOTATION Label (Moved down and smaller)
-    doc.setFontSize(24);
+    // QUOTATION Label (Top Right)
+    doc.setFontSize(24); // Reduced to prevent overlap
     setTextColor(theme.primaryColor);
-    doc.text("QUOTATION", pageWidth - 20, 28, { align: 'right' });
+    doc.text("QUOTATION", pageWidth - 20, 28, { align: 'right' }); // Lowered slightly
     
     // Divider
     doc.setDrawColor(226, 232, 240);
     doc.setLineWidth(0.5);
-    doc.line(20, 38, pageWidth - 20, 38);
+    doc.line(20, 38, pageWidth - 20, 38); // Moved down
 
   } else if (theme.headerStyle === 'corporate') {
     // Left Box Header
@@ -85,7 +86,7 @@ export const generateQuotePDF = (
     doc.rect(0, 0, pageWidth, 45, 'F'); // Increased height
     
     doc.setFont(theme.font, "bold");
-    doc.setFontSize(24);
+    doc.setFontSize(22);
     doc.setTextColor(255, 255, 255);
     doc.text(COMPANY_DETAILS.name, 20, 20);
     
@@ -96,7 +97,7 @@ export const generateQuotePDF = (
 
     // Right Box Quote
     doc.setFontSize(26);
-    doc.text("QUOTATION", pageWidth - 20, 38, { align: 'right' }); // Bottom right align
+    doc.text("QUOTATION", pageWidth - 20, 38, { align: 'right' }); // Aligned bottom right of header
 
   } else {
     // Minimal
@@ -157,54 +158,84 @@ export const generateQuotePDF = (
   drawDetailRow("Valid Until:", inputs.expireDate, 16);
   if (inputs.quoteBy) drawDetailRow("Prepared By:", inputs.quoteBy, 21);
 
+  // Subject Line
+  let tableStartY = boxY + 35;
+  if (inputs.subject) {
+    doc.setFont(theme.font, "bold");
+    doc.setFontSize(10);
+    setTextColor(theme.secondaryColor);
+    doc.text(`Subject: ${inputs.subject}`, 20, boxY + 30);
+    tableStartY = boxY + 42;
+  }
 
   // --- DESCRIPTION GENERATOR ---
   const generateItemDescription = (item: QuoteItem) => {
-    // 1. MANUAL ITEM HANDLING
-    if (item.type === 'manual') {
-        let desc = `${item.manualDesc}\n`;
-        desc += `Qty: ${item.manualQty} x Rate: ${pricing.currencySymbol}${item.manualRate?.toFixed(2)}`;
-        return desc;
-    }
+    if (item.type === 'manual') return item.manualDesc || 'Manual Item';
 
-    // 2. SIGN ITEM HANDLING
-    const is3D = item.specs!.category === SignCategory.ThreeD_SS || item.specs!.category === SignCategory.ThreeD_DS;
-    const isLightBoard = item.specs!.category === SignCategory.SSWL || item.specs!.category === SignCategory.DSWL;
+    const is3D = item.specs?.category === SignCategory.ThreeD_SS || item.specs?.category === SignCategory.ThreeD_DS;
+    const isLightBoard = item.specs?.category === SignCategory.SSWL || item.specs?.category === SignCategory.DSWL;
     
     let parts = [];
     
-    // Headline
-    parts.push(`${item.specs!.width}' x ${item.specs!.height}' ${item.specs!.category}`);
-    parts.push(`Type: ${item.specs!.subType}`);
+    // 1. Headline
+    parts.push(`Product Specification`);
+    parts.push(`${item.specs?.width}' x ${item.specs?.height}' ${item.specs?.category}`);
+    parts.push(`Type: ${item.specs?.subType}\n`);
     
-    // Technical Specs
-    let specs = [];
+    // 2. Technical Specs
+    parts.push(`Materials & Manufacturing`);
     if (is3D) {
-       specs.push("• 4mm Outdoor ACP Backing Sheet");
-       specs.push("• High-quality Acrylic Face");
-       specs.push("• Premium LED Illumination (Modules/Pixel)");
-       specs.push("• Weather-resistant construction");
+       parts.push("• 4mm Outdoor ACP Backing Sheet");
+       parts.push("• High-quality Acrylic Face");
+       parts.push("• Premium LED Illumination (Modules/Pixel)");
+       parts.push("• Weather-resistant construction\n");
     } else if (isLightBoard) {
-       specs.push("• Heavy Duty Steel Box Frame (Zinc Coated)");
-       specs.push("• Translucent Face Material");
-       specs.push(`• Box Depth: 6-8 inches`);
-       specs.push("• Weather-proof Backing (Zinc/ACP)");
-       if (item.results!.lightQty > 0) specs.push(`• ${item.results!.lightQty}x LED Tube Lights`);
+       parts.push("• Heavy Duty Steel Box Frame (Zinc Coated)");
+       parts.push("• Translucent Face Material");
+       parts.push(`• Box Depth: 6-8 inches`);
+       parts.push("• Weather-proof Backing (Zinc/ACP)\n");
     } else {
-       specs.push("• Heavy Duty Steel Frame");
-       specs.push("• Rust-proof primer finish");
-       specs.push("• High-resolution print");
+       parts.push("• Heavy Duty Steel Frame Structure");
+       parts.push("• Rust-proof primer finish");
+       parts.push("• High-resolution print / Premium finish material\n");
+    }
+
+    parts.push(`Sign Construction`);
+    if (is3D) {
+        parts.push(`• Letter Depth: ~2.5" - 3"`);
+        parts.push(`• Emboss Strip: 3mm Echo Board with Auto Paint Finish`);
+        parts.push(`• Lighting: High-brightness LED Modules`);
+    } else if (isLightBoard) {
+        if (item.results?.lightQty && item.results.lightQty > 0) parts.push(`• Lighting: ${item.results.lightQty} x LED Tube Lights (Samsung/Phillips/Equiv)`);
+        parts.push(`• Beading: Aluminum L-Beading`);
+    } else {
+        parts.push(`• Mounting: Standard Steel Frame`);
     }
     
-    if (inputs.showAreaInPDF) {
-        specs.push(`• Total Area: ${item.results!.area.toFixed(2)} sq.ft`);
+    if (inputs.showAreaInPDF && item.results) {
+        parts.push(`• Total Area: ${item.results.area.toFixed(2)} sq.ft`);
+    }
+    parts.push('');
+
+    // 3. Hardware
+    if (item.specs?.giStandQty && item.specs.giStandQty > 0 || item.specs?.concreteBaseQty && item.specs.concreteBaseQty > 0) {
+        parts.push(`Mounting Hardware`);
+        if (item.specs?.giStandQty && item.specs.giStandQty > 0) parts.push(`• ${item.specs.giStandQty}x GI Stands (${item.specs.giPipeSize})`);
+        if (item.specs?.concreteBaseQty && item.specs.concreteBaseQty > 0) parts.push(`• ${item.specs.concreteBaseQty}x Concrete Bases`);
+        parts.push('');
     }
 
-    // Hardware
-    if (item.specs!.giStandQty > 0) specs.push(`• ${item.specs!.giStandQty}x GI Stands (${item.specs!.giPipeSize})`);
-    if (item.specs!.concreteBaseQty > 0) specs.push(`• ${item.specs!.concreteBaseQty}x Concrete Bases`);
+    // Warranty
+    parts.push(`Warranty`);
+    if (is3D) {
+        parts.push(`• Acrylic: 5 Years | LED: 1 Year | ACP: 5 Years`);
+    } else if (isLightBoard) {
+        parts.push(`• Structure: 5 Years | LED: 1 Year | Print: 1-2 Years`);
+    } else {
+        parts.push(`• Structure: 5 Years | Face: Manufacturer Spec`);
+    }
 
-    return parts.join('\n') + '\n\n' + specs.join('\n');
+    return parts.join('\n');
   };
 
   // --- TABLE CONTENT ---
@@ -229,8 +260,21 @@ export const generateQuotePDF = (
       }
   };
 
-  if (inputs.installationNeeded) addServiceRow("Installation Services", "Professional mounting, alignment & safety compliance", inputs.installationCost);
-  if (inputs.transportationNeeded) addServiceRow("Transportation", "Safe delivery to site, loading & unloading", inputs.transportationCost);
+  if (inputs.installationNeeded) {
+      const installDesc = `Installation Services\n` +
+                          `• Professional mounting & alignment\n` +
+                          `• Safety & Compliance (Work at heights)\n` +
+                          `• Machinery Deployment (if required)`;
+      addServiceRow("Installation Services", installDesc, inputs.installationCost);
+  }
+
+  if (inputs.transportationNeeded) {
+       const transportDesc = `Transportation & Logistics\n` +
+                             `• Safe delivery to site\n` +
+                             `• Loading & Unloading`;
+       addServiceRow("Transportation", transportDesc, inputs.transportationCost);
+  }
+
   if (inputs.artWorkCost > 0) addServiceRow("Artwork & Design", "Custom design as per client requirements", inputs.artWorkCost);
 
   // Totals Logic
@@ -249,16 +293,17 @@ export const generateQuotePDF = (
 
   // --- RENDER TABLE ---
   autoTable(doc, {
-    startY: boxY + 35,
+    startY: tableStartY,
     head: [['#', 'Description', 'Amount']],
     body: tableBody,
     theme: theme.headerStyle === 'minimal' ? 'plain' : 'grid',
     styles: {
         font: theme.font,
         fontSize: 10,
-        cellPadding: 5,
+        cellPadding: 6,
         textColor: theme.textColor,
-        lineColor: [230, 230, 230]
+        lineColor: [230, 230, 230],
+        valign: 'top'
     },
     headStyles: {
         fillColor: theme.headerStyle === 'minimal' ? [255, 255, 255] : theme.primaryColor,

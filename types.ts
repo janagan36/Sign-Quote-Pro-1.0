@@ -1,3 +1,4 @@
+
 export enum SignCategory {
   SSWOL = "Single Side without light (SSWOL)",
   SSWL = "Single Side Light Board (SSWL)",
@@ -125,6 +126,7 @@ export interface QuoteInputs {
   date: string;
   expireDate: string;
   quoteBy: string;
+  subject: string;
   showAreaInPDF: boolean;
   pdfTemplate: 'modern' | 'corporate' | 'minimal';
 

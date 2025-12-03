@@ -35,8 +35,9 @@ export const SIGN_TYPES_HIERARCHY: Record<SignCategory, string[]> = {
 
 export const COMPANY_DETAILS = {
   name: "Waytoogo Industries (Pvt) Ltd.",
-  address: "A10, Commercial Centre, Bandarawela",
-  contact: "0743724000 , 071 9999221"
+  address: "A10, Commercial Centre\nBandarawela Uva Province 90100\nSriLanka",
+  contact: "0743724000",
+  email: "waytoogoindustries@gmail.com"
 };
 
 // Initial default prices
