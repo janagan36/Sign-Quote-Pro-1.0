@@ -410,7 +410,14 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
           phone = '94' + phone.substring(1);
       }
 
-      const text = `Hello ${quoteInputs.clientName},\n\nPlease find the attached quotation regarding ${quoteInputs.subject || 'your signage requirement'}.\n\nRef: ${quoteInputs.serialNumber}\n\nThank you,\nWaytoogo Industries`;
+      const itemsList = quoteInputs.items
+        .map((item, idx) => {
+            const name = item.type === 'sign' ? item.specs?.subType : item.manualDesc;
+            return `${idx + 1}. ${name}`;
+        })
+        .join('\n');
+
+      const text = `Hello ${quoteInputs.clientName},\n\nPlease find the attached quotation regarding ${quoteInputs.subject || 'your signage requirement'}.\n\nRef: ${quoteInputs.serialNumber}\n\n*Items:*\n${itemsList}\n\n*Total Amount:* ${pricing.currencySymbol} ${grandTotal.finalTotal.toFixed(2)}\n\nThank you,\nWaytoogo Industries`;
       
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
       window.open(url, '_blank');
@@ -1083,7 +1090,8 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
             </h2>
             
             {/* Template Selector */}
-            <div className="mb-6 z-50 relative">
+            {/* Template selector removed as per corporate standard */}
+            <div className="mb-6 z-50 relative hidden">
                 <GlassSelect 
                     label="PDF Template"
                     value={quoteInputs.pdfTemplate}
