@@ -56,7 +56,7 @@ export const DEFAULT_PRICING: PricingConfig = {
     [SignCategory.DSWO]: {
       "Flex": 260,
       "PVC Paste on Cladding": 600,
-      "Paint Finish Echo Letters": 1500
+      "Paint Finish Echo Letters": 2250
     },
     [SignCategory.DSWL]: {
       "Flex Light Board": 350,

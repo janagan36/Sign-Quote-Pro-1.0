@@ -1,3 +1,4 @@
+
 export enum SignCategory {
   SSWOL = "Single Side without light (SSWOL)",
   SSWL = "Single Side Light Board (SSWL)",
@@ -97,11 +98,22 @@ export interface SignCalculationResult {
   itemTotal: number; // Total for this specific sign (Materials + Labor + Extras)
 }
 
-// 3. A finalized item in the quote list
+// 3. A finalized item in the quote list (Supports Sign OR Manual)
 export interface QuoteItem {
   id: string;
-  specs: SignSpecifications;
-  results: SignCalculationResult;
+  type: 'sign' | 'manual';
+  
+  // For 'sign' type
+  specs?: SignSpecifications;
+  results?: SignCalculationResult;
+  
+  // For 'manual' type
+  manualDesc?: string;
+  manualQty?: number;
+  manualRate?: number;
+  
+  // Common
+  total: number;
 }
 
 // 4. Global Quote Configuration (Client + Services)
@@ -115,6 +127,7 @@ export interface QuoteInputs {
   expireDate: string;
   quoteBy: string;
   showAreaInPDF: boolean;
+  pdfTemplate: 'modern' | 'corporate' | 'minimal';
 
   // The List of Signs
   items: QuoteItem[];
