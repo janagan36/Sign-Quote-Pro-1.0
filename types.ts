@@ -1,4 +1,3 @@
-
 export enum SignCategory {
   SSWOL = "Single Side without light (SSWOL)",
   SSWL = "Single Side Light Board (SSWL)",

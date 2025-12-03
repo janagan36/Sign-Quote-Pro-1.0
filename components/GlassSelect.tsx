@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
@@ -45,7 +44,7 @@ const GlassSelect: React.FC<GlassSelectProps> = ({
   return (
     <div className={`relative ${className}`} ref={containerRef}>
       {label && (
-        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider block ml-1">
+        <label className="text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider block ml-1">
           {label}
         </label>
       )}
@@ -54,16 +53,16 @@ const GlassSelect: React.FC<GlassSelectProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className={`
           w-full p-3 ${Icon ? 'pl-10' : 'pl-4'} pr-10 rounded-xl outline-none font-medium transition-all duration-200
-          bg-white/40 dark:bg-black/40 backdrop-blur-md
-          border border-white/40 dark:border-white/10
-          text-slate-900 dark:text-white
-          hover:bg-white/60 dark:hover:bg-white/10
+          bg-slate-50/50 dark:bg-black/40 backdrop-blur-md
+          border border-slate-200/60 dark:border-white/10
+          text-slate-800 dark:text-white
+          hover:bg-white/80 dark:hover:bg-white/10
           focus:ring-2 focus:ring-blue-500/50
           cursor-pointer relative flex items-center select-none min-h-[46px]
         `}
       >
         {Icon && (
-            <span className="absolute left-3 text-slate-400 dark:text-slate-500 z-10 pointer-events-none">
+            <span className="absolute left-3 text-slate-500 dark:text-slate-500 z-10 pointer-events-none">
                 <Icon size={18} />
             </span>
         )}
@@ -75,8 +74,8 @@ const GlassSelect: React.FC<GlassSelectProps> = ({
 
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 z-50 w-full min-w-[200px] max-h-60 overflow-y-auto custom-scrollbar
-          bg-white/90 dark:bg-[#1a1a1a]/95 backdrop-blur-xl 
-          border border-white/20 dark:border-white/10 
+          bg-white/95 dark:bg-[#1a1a1a]/95 backdrop-blur-xl 
+          border border-slate-200/60 dark:border-white/10 
           rounded-xl shadow-2xl animate-in fade-in zoom-in-95 duration-100
         ">
           <div className="p-1.5 space-y-0.5">
@@ -91,7 +90,7 @@ const GlassSelect: React.FC<GlassSelectProps> = ({
                   p-2.5 rounded-lg text-sm font-medium cursor-pointer flex items-center justify-between transition-colors
                   ${value === opt.value 
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' 
-                    : 'text-slate-700 dark:text-slate-200 hover:bg-black/5 dark:hover:bg-white/10'
+                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10'
                   }
                 `}
               >

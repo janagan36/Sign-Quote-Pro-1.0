@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 
@@ -81,7 +80,7 @@ const GlassDatePicker: React.FC<GlassDatePickerProps> = ({ label, value, onChang
               ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/50 scale-110' 
               : isToday
                 ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30'
-                : 'text-slate-700 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-white/10'
+                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10'
             }
           `}
         >
@@ -96,7 +95,7 @@ const GlassDatePicker: React.FC<GlassDatePickerProps> = ({ label, value, onChang
 
   return (
     <div className="relative" ref={containerRef}>
-      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider block ml-1">
+      <label className="text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider block ml-1">
         {label}
       </label>
       
@@ -105,15 +104,15 @@ const GlassDatePicker: React.FC<GlassDatePickerProps> = ({ label, value, onChang
         onClick={() => setIsOpen(!isOpen)}
         className={`
           w-full p-3 pl-10 rounded-xl outline-none font-medium transition-all duration-200
-          bg-white/40 dark:bg-black/40 backdrop-blur-md
-          border border-white/40 dark:border-white/10
+          bg-slate-50/50 dark:bg-black/40 backdrop-blur-md
+          border border-slate-200/60 dark:border-white/10
           text-slate-900 dark:text-white
-          hover:bg-white/60 dark:hover:bg-white/10
+          hover:bg-white/80 dark:hover:bg-white/10
           focus:ring-2 focus:ring-blue-500/50
           cursor-pointer relative flex items-center group
         `}
       >
-        <span className="absolute left-3 text-blue-500 z-10 pointer-events-none transition-transform group-hover:scale-110 duration-200">
+        <span className="absolute left-3 text-blue-600 dark:text-blue-500 z-10 pointer-events-none transition-transform group-hover:scale-110 duration-200">
             <Calendar size={18} />
         </span>
         <span>{value || "Select Date"}</span>
@@ -122,8 +121,8 @@ const GlassDatePicker: React.FC<GlassDatePickerProps> = ({ label, value, onChang
       {/* Popup Calendar */}
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 z-50 p-4 w-72 
-          bg-white/80 dark:bg-[#1a1a1a]/90 backdrop-blur-xl 
-          border border-white/20 dark:border-white/10 
+          bg-white/95 dark:bg-[#1a1a1a]/95 backdrop-blur-xl 
+          border border-slate-200/60 dark:border-white/10 
           rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-200
         ">
           {/* Header */}
@@ -131,7 +130,7 @@ const GlassDatePicker: React.FC<GlassDatePickerProps> = ({ label, value, onChang
             <button 
                 type="button"
                 onClick={handlePrevMonth} 
-                className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-colors"
+                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-colors"
             >
               <ChevronLeft size={20} />
             </button>
@@ -141,7 +140,7 @@ const GlassDatePicker: React.FC<GlassDatePickerProps> = ({ label, value, onChang
             <button 
                 type="button"
                 onClick={handleNextMonth} 
-                className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-colors"
+                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-colors"
             >
               <ChevronRight size={20} />
             </button>

@@ -1,4 +1,3 @@
-
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { QuoteInputs, PricingConfig, GrandTotalResult, QuoteItem, SignCategory } from '../types';

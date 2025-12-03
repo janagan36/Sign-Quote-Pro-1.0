@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PricingConfig, PIPE_SIZES, SignCategory } from '../types';
 import { SIGN_TYPES_HIERARCHY, DEFAULT_PRICING } from '../constants';
-import { Save, AlertCircle, Hammer, Box, RotateCcw } from 'lucide-react';
+import { Save, AlertCircle, Hammer, Box, RotateCcw, Truck, LayoutTemplate } from 'lucide-react';
 
 interface AdminPanelProps {
   currentPricing: PricingConfig;
@@ -34,9 +34,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
     }
   };
 
-  // Glass Styles
-  const cardClass = "bg-white/80 dark:bg-[#202020]/80 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-xl rounded-2xl overflow-hidden transition-all duration-300 h-full flex flex-col";
-  const inputClass = "w-full pl-12 pr-3 py-2.5 bg-black/5 dark:bg-white/5 border-b-2 border-transparent focus:border-blue-500 rounded-t-lg outline-none transition-all text-slate-900 dark:text-slate-100 font-medium hover:bg-black/10 dark:hover:bg-white/10";
+  // Glass Styles (Updated for Light Mode Contrast)
+  const cardClass = "bg-white/85 dark:bg-[#202020]/80 backdrop-blur-2xl border border-slate-200/60 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-black/30 rounded-2xl overflow-hidden transition-all duration-300 h-full flex flex-col";
+  const inputClass = "w-full pl-12 pr-3 py-2.5 bg-slate-50/50 dark:bg-white/5 border-b-2 border-transparent focus:border-blue-500 rounded-t-lg outline-none transition-all text-slate-800 dark:text-slate-100 font-medium hover:bg-white dark:hover:bg-white/10";
 
   return (
     <div className={cardClass} style={{ height: '85vh' }}>
@@ -70,7 +70,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-black/5 dark:border-white/5 overflow-x-auto shrink-0 bg-white/50 dark:bg-black/50 backdrop-blur-md">
+      <div className="flex border-b border-slate-200 dark:border-white/5 overflow-x-auto shrink-0 bg-white/50 dark:bg-black/50 backdrop-blur-md">
         {[
             { id: 'materials', label: 'Face Materials' },
             { id: 'structural', label: 'Steel & Structure' },
@@ -83,7 +83,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
                 className={`px-6 py-4 font-semibold transition-colors whitespace-nowrap border-b-2 ${
                     activeTab === tab.id 
                     ? 'text-blue-600 border-blue-600 dark:text-blue-400' 
-                    : 'text-slate-500 border-transparent hover:text-slate-800 hover:bg-black/5 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/5'
+                    : 'text-slate-500 border-transparent hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/5'
                 }`}
                 onClick={() => setActiveTab(tab.id as any)}
             >
@@ -96,8 +96,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
         {activeTab === 'materials' && (
           <div className="space-y-8">
             {Object.entries(SIGN_TYPES_HIERARCHY).map(([category, types]) => (
-              <div key={category} className="bg-white/50 dark:bg-white/5 rounded-xl border border-black/5 dark:border-white/5 shadow-sm overflow-hidden">
-                <div className="bg-black/5 dark:bg-white/5 p-4 border-b border-black/5 dark:border-white/5">
+              <div key={category} className="bg-white/50 dark:bg-white/5 rounded-xl border border-slate-200/50 dark:border-white/5 shadow-sm overflow-hidden">
+                <div className="bg-slate-50 dark:bg-white/5 p-4 border-b border-slate-200/50 dark:border-white/5">
                     <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200">{category}</h3>
                 </div>
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -125,8 +125,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
 
         {activeTab === 'structural' && (
           <div className="max-w-4xl mx-auto">
-             <div className="bg-white/50 dark:bg-white/5 p-8 rounded-xl border border-black/5 dark:border-white/5 shadow-sm">
-                <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-black/5 dark:border-white/5">
+             <div className="bg-white/50 dark:bg-white/5 p-8 rounded-xl border border-slate-200/50 dark:border-white/5 shadow-sm">
+                <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-slate-200/50 dark:border-white/5">
                     <Box size={22} className="text-blue-600 dark:text-blue-400" />
                     Structure & Electrical Rates
                 </h3>
@@ -169,11 +169,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
           </div>
         )}
 
-        {/* Similar updates for other tabs - applying glass styles */}
         {activeTab === 'labor' && (
              <div className="max-w-3xl mx-auto">
-                <div className="bg-white/50 dark:bg-white/5 p-8 rounded-xl border border-black/5 dark:border-white/5 shadow-sm">
-                    <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-black/5 dark:border-white/5">
+                <div className="bg-white/50 dark:bg-white/5 p-8 rounded-xl border border-slate-200/50 dark:border-white/5 shadow-sm">
+                    <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-slate-200/50 dark:border-white/5">
                         <Hammer size={22} className="text-blue-600 dark:text-blue-400" />
                         Work Charges (Per Sq. Ft)
                     </h3>
@@ -183,7 +182,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
                             { label: 'Medium Signs', sub: '10 - 20 sq.ft', key: 'tier2' },
                             { label: 'Large Signs', sub: '> 20 sq.ft', key: 'tier3' }
                         ].map(tier => (
-                            <div key={tier.key} className="flex items-center justify-between p-5 bg-black/5 dark:bg-white/5 rounded-xl border border-transparent">
+                            <div key={tier.key} className="flex items-center justify-between p-5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-transparent">
                                 <div>
                                     <label className="font-bold text-slate-700 dark:text-slate-300 block">{tier.label}</label>
                                     <span className="text-sm text-slate-500">{tier.sub}</span>
@@ -206,11 +205,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
 
         {activeTab === 'pipes' && (
           <div className="max-w-3xl mx-auto">
-             <div className="bg-white/50 dark:bg-white/5 p-8 rounded-xl border border-black/5 dark:border-white/5 shadow-sm">
-                <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-4 pb-4 border-b border-black/5 dark:border-white/5">GI Pipe Unit Rates</h3>
+             <div className="bg-white/50 dark:bg-white/5 p-8 rounded-xl border border-slate-200/50 dark:border-white/5 shadow-sm">
+                <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-4 pb-4 border-b border-slate-200/50 dark:border-white/5">GI Pipe Unit Rates</h3>
                 <div className="grid gap-3">
                 {PIPE_SIZES.map(size => (
-                    <div key={size} className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 rounded-lg border border-transparent hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                    <div key={size} className="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-white/5 rounded-lg border border-transparent hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
                     <label className="font-semibold text-slate-700 dark:text-slate-300">{size}</label>
                     <div className="relative w-48">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">{pricing.currencySymbol}</span>
@@ -232,35 +231,36 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
 
         {activeTab === 'others' && (
             <div className="max-w-3xl mx-auto space-y-6">
-                <div className="bg-white/50 dark:bg-white/5 p-8 rounded-xl border border-black/5 dark:border-white/5 shadow-sm">
-                    <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-6 pb-4 border-b border-black/5 dark:border-white/5">Miscellaneous Costs</h3>
-                    <div className="grid gap-6">
-                         {[
-                             { label: 'Off-Cut Rate', sub: 'Price per sq. ft', key: 'offCutPerSqFt' },
-                             { label: 'Angle Support Rate', sub: 'Price per unit', key: 'angleSupportUnit' },
-                             { label: 'Concrete Base Rate', sub: 'Price per unit', key: 'concreteBaseUnit' }
-                         ].map(item => (
-                            <div key={item.key} className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-6 last:border-0 last:pb-0">
+                <div className="bg-white/50 dark:bg-white/5 p-8 rounded-xl border border-slate-200/50 dark:border-white/5 shadow-sm">
+                    <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-slate-200/50 dark:border-white/5">
+                        <Box size={22} className="text-blue-600 dark:text-blue-400" />
+                        Other / Extra Rates
+                    </h3>
+                    <div className="space-y-4">
+                        {[
+                            { label: 'Off-Cut Charge', sub: 'Price per sq.ft', key: 'offCutPerSqFt' },
+                            { label: 'Angle Iron Support', sub: 'Price per unit', key: 'angleSupportUnit' },
+                            { label: 'Concrete Base', sub: 'Price per unit', key: 'concreteBaseUnit' }
+                        ].map(item => (
+                            <div key={item.key} className="flex items-center justify-between p-5 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-transparent">
                                 <div>
-                                    <label className="block font-bold text-slate-700 dark:text-slate-300">{item.label}</label>
-                                    <span className="text-xs text-slate-500">{item.sub}</span>
+                                    <label className="font-bold text-slate-700 dark:text-slate-300 block">{item.label}</label>
+                                    <span className="text-sm text-slate-500">{item.sub}</span>
                                 </div>
-                                <div className="relative w-56">
+                                <div className="relative w-48">
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium">{pricing.currencySymbol}</span>
                                     <input
                                         type="number"
-                                        min="0"
-                                        step="0.01"
                                         value={pricing.others[item.key as keyof typeof pricing.others]}
                                         onChange={(e) => handleDeepChange('others', item.key, e.target.value)}
                                         className={inputClass}
                                     />
                                 </div>
                             </div>
-                         ))}
+                        ))}
                     </div>
                 </div>
-          </div>
+            </div>
         )}
       </div>
     </div>
