@@ -1,3 +1,4 @@
+
 import { SignCategory, PricingConfig, PIPE_SIZES } from './types';
 
 export const SIGN_TYPES_HIERARCHY: Record<SignCategory, string[]> = {
@@ -102,5 +103,11 @@ export const DEFAULT_PRICING: PricingConfig = {
     offCutPerSqFt: 100,
     angleSupportUnit: 4500,
     concreteBaseUnit: 5000
+  },
+  pdfSettings: {
+    notes: "\"We are committed to using only high-quality materials to ensure the best results and utmost customer satisfaction.\"",
+    bankDetails: "Bank Name:- HNB BANK\nAccount name:- Waytoogo Industries (Pvt) Ltd\nAccount No:- 012010020190\nBranch:- Bandarawela\nBIC/SWIFT Code: HBLILKLX",
+    terms: "Please note the letter of confirmation or purchase order needed to commence work. An advance of 75% is required to commence work.\nBalance payments of completion of the activity.\nWe are not responsible for any damages caused by the customer.\nEstimated completion period of 7 - 14 Days from the date of advance.",
+    specialNote: "You will need to pay a transportation fee for any maintenance or repair service."
   }
 };

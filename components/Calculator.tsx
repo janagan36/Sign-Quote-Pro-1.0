@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
     QuoteInputs, 
@@ -409,15 +410,20 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
       if (phone.startsWith('0')) {
           phone = '94' + phone.substring(1);
       }
+      
+      // Build Summary
+      const itemsSummary = quoteInputs.items.map((item, idx) => {
+          if(item.type === 'manual') return `${idx+1}. ${item.manualDesc}`;
+          return `${idx+1}. ${item.specs?.subType} (${item.specs?.width}'x${item.specs?.height}')`;
+      }).join('\n');
 
-      const itemsList = quoteInputs.items
-        .map((item, idx) => {
-            const name = item.type === 'sign' ? item.specs?.subType : item.manualDesc;
-            return `${idx + 1}. ${name}`;
-        })
-        .join('\n');
-
-      const text = `Hello ${quoteInputs.clientName},\n\nPlease find the attached quotation regarding ${quoteInputs.subject || 'your signage requirement'}.\n\nRef: ${quoteInputs.serialNumber}\n\n*Items:*\n${itemsList}\n\n*Total Amount:* ${pricing.currencySymbol} ${grandTotal.finalTotal.toFixed(2)}\n\nThank you,\nWaytoogo Industries`;
+      const text = `*QUOTATION: ${quoteInputs.serialNumber}*\n` +
+                   `Subject: ${quoteInputs.subject || 'Signage Requirement'}\n\n` +
+                   `Hello ${quoteInputs.clientName},\n\n` +
+                   `Please find the attached quotation for:\n` +
+                   `${itemsSummary}\n\n` +
+                   `*Total Amount: ${pricing.currencySymbol} ${grandTotal.finalTotal.toFixed(2)}*\n\n` +
+                   `Thank you,\nWaytoogo Industries`;
       
       const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
       window.open(url, '_blank');
@@ -1089,16 +1095,14 @@ const Calculator: React.FC<CalculatorProps> = ({ pricing }) => {
                 Quote Summary
             </h2>
             
-            {/* Template Selector */}
-            {/* Template selector removed as per corporate standard */}
-            <div className="mb-6 z-50 relative hidden">
+            <div className="mb-6 z-30">
                 <GlassSelect 
                     label="PDF Template"
                     value={quoteInputs.pdfTemplate}
                     options={[
-                        { label: 'Modern (Blue)', value: 'modern' },
-                        { label: 'Corporate (Slate)', value: 'corporate' },
-                        { label: 'Minimal (BW)', value: 'minimal' },
+                        { label: 'Modern Blue', value: 'modern' },
+                        { label: 'Corporate Slate', value: 'corporate' },
+                        { label: 'Minimal Black', value: 'minimal' }
                     ]}
                     onChange={(val) => handleGlobalChange('pdfTemplate', val)}
                 />

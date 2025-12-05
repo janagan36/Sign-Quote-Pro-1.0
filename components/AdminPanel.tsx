@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { PricingConfig, PIPE_SIZES, SignCategory } from '../types';
 import { SIGN_TYPES_HIERARCHY, DEFAULT_PRICING } from '../constants';
-import { Save, AlertCircle, Hammer, Box, RotateCcw, Truck, LayoutTemplate, Layers } from 'lucide-react';
+import { Save, AlertCircle, Hammer, Box, RotateCcw, Truck, LayoutTemplate, Layers, FileText } from 'lucide-react';
 
 interface AdminPanelProps {
   currentPricing: PricingConfig;
@@ -11,7 +12,7 @@ interface AdminPanelProps {
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose }) => {
   const [pricing, setPricing] = useState<PricingConfig>(currentPricing);
-  const [activeTab, setActiveTab] = useState<'materials' | 'pipes' | 'structural' | 'labor' | 'others'>('materials');
+  const [activeTab, setActiveTab] = useState<'materials' | 'pipes' | 'structural' | 'labor' | 'others' | 'pdf'>('materials');
 
   const handleMaterialChange = (category: string, type: string, value: string) => {
     setPricing(prev => ({
@@ -27,6 +28,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
   const handleDeepChange = (section: keyof PricingConfig, key: string, value: string) => {
     setPricing(prev => ({ ...prev, [section]: { ...(prev[section] as any), [key]: parseFloat(value) || 0 } }));
   };
+  
+  const handlePdfSettingChange = (key: keyof PricingConfig['pdfSettings'], value: string) => {
+      setPricing(prev => ({
+          ...prev,
+          pdfSettings: {
+              ...prev.pdfSettings,
+              [key]: value
+          }
+      }));
+  };
 
   const handleReset = () => {
     if (window.confirm("Are you sure you want to reset all prices to factory defaults?")) {
@@ -37,6 +48,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
   // Glass Styles (Updated for Light Mode Contrast)
   const cardClass = "bg-white/85 dark:bg-[#202020]/80 backdrop-blur-2xl border border-slate-200/60 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-black/30 rounded-2xl overflow-hidden transition-all duration-300 h-full flex flex-col";
   const inputClass = "w-full pl-12 pr-3 py-2.5 bg-slate-50/50 dark:bg-white/5 border-b-2 border-transparent focus:border-blue-500 rounded-t-lg outline-none transition-all text-slate-800 dark:text-slate-100 font-medium hover:bg-white dark:hover:bg-white/10";
+  const textAreaClass = "w-full p-4 bg-slate-50/50 dark:bg-white/5 border-2 border-transparent focus:border-blue-500 rounded-lg outline-none transition-all text-slate-800 dark:text-slate-100 hover:bg-white dark:hover:bg-white/10 min-h-[120px]";
 
   return (
     <div className={cardClass} style={{ height: '85vh' }}>
@@ -72,21 +84,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
       {/* Tabs */}
       <div className="flex border-b border-slate-200 dark:border-white/5 overflow-x-auto shrink-0 bg-white/50 dark:bg-black/50 backdrop-blur-md">
         {[
-            { id: 'materials', label: 'Face Materials' },
-            { id: 'structural', label: 'Steel & Structure' },
-            { id: 'labor', label: 'Work Charges' },
-            { id: 'pipes', label: 'GI Stands' },
-            { id: 'others', label: 'Other/Extras' }
+            { id: 'materials', label: 'Face Materials', icon: Layers },
+            { id: 'structural', label: 'Steel & Structure', icon: Box },
+            { id: 'labor', label: 'Work Charges', icon: Hammer },
+            { id: 'pipes', label: 'GI Stands', icon: LayoutTemplate },
+            { id: 'others', label: 'Other/Extras', icon: Truck },
+            { id: 'pdf', label: 'PDF & Terms', icon: FileText }
         ].map(tab => (
             <button 
                 key={tab.id}
-                className={`px-6 py-4 font-semibold transition-colors whitespace-nowrap border-b-2 ${
+                className={`px-6 py-4 font-semibold transition-colors whitespace-nowrap border-b-2 flex items-center gap-2 ${
                     activeTab === tab.id 
                     ? 'text-blue-600 border-blue-600 dark:text-blue-400' 
                     : 'text-slate-500 border-transparent hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/5'
                 }`}
                 onClick={() => setActiveTab(tab.id as any)}
             >
+                <tab.icon size={16} />
                 {tab.label}
             </button>
         ))}
@@ -275,6 +289,55 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ currentPricing, onSave, onClose
                                     className={inputClass}
                                 />
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {activeTab === 'pdf' && (
+            <div className="max-w-4xl mx-auto space-y-6">
+                <div className="bg-white/50 dark:bg-white/5 p-8 rounded-xl border border-slate-200/50 dark:border-white/5 shadow-sm">
+                    <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-6 flex items-center gap-2 pb-4 border-b border-slate-200/50 dark:border-white/5">
+                        <FileText size={22} className="text-blue-600 dark:text-blue-400" />
+                        PDF Terms & Content
+                    </h3>
+                    
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-2">Notes (Appears below table)</label>
+                            <textarea
+                                value={pricing.pdfSettings.notes}
+                                onChange={(e) => handlePdfSettingChange('notes', e.target.value)}
+                                className={textAreaClass}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-2">Bank Details</label>
+                            <textarea
+                                value={pricing.pdfSettings.bankDetails}
+                                onChange={(e) => handlePdfSettingChange('bankDetails', e.target.value)}
+                                className={textAreaClass}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-2">Terms & Conditions</label>
+                            <textarea
+                                value={pricing.pdfSettings.terms}
+                                onChange={(e) => handlePdfSettingChange('terms', e.target.value)}
+                                className={textAreaClass}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-2">Special Note (Footer)</label>
+                            <textarea
+                                value={pricing.pdfSettings.specialNote}
+                                onChange={(e) => handlePdfSettingChange('specialNote', e.target.value)}
+                                className={textAreaClass}
+                            />
                         </div>
                     </div>
                 </div>

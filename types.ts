@@ -53,6 +53,13 @@ export interface OtherRates {
   concreteBaseUnit: number;
 }
 
+export interface PDFSettings {
+  notes: string;
+  bankDetails: string;
+  terms: string;
+  specialNote: string;
+}
+
 export interface PricingConfig {
   materials: MaterialRates;
   pipes: PipeRates;
@@ -60,6 +67,7 @@ export interface PricingConfig {
   structural: StructuralRates;
   electrical: ElectricalRates;
   others: OtherRates;
+  pdfSettings: PDFSettings;
   currencySymbol: string;
 }
 
@@ -129,7 +137,7 @@ export interface QuoteInputs {
   subject: string;
   showAreaInPDF: boolean;
   pdfTemplate: 'modern' | 'corporate' | 'minimal';
-
+  
   // The List of Signs
   items: QuoteItem[];
 

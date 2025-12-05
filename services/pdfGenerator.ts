@@ -117,8 +117,10 @@ export const generateQuotePDF = (
     doc.setFont(theme.font, "normal");
     doc.setFontSize(9);
     setTextColor(theme.secondaryColor);
-    doc.text(COMPANY_DETAILS.address, 20, theme.headerStyle === 'minimal' ? 35 : 26);
-    doc.text(`Tel: ${COMPANY_DETAILS.contact}`, 20, theme.headerStyle === 'minimal' ? 40 : 31);
+    const addressLines = doc.splitTextToSize(COMPANY_DETAILS.address, 100);
+    doc.text(addressLines, 20, theme.headerStyle === 'minimal' ? 35 : 26);
+    const contactY = theme.headerStyle === 'minimal' ? 45 : 26 + (addressLines.length * 4) + 2;
+    doc.text(`Tel: ${COMPANY_DETAILS.contact}`, 20, contactY);
   }
 
   // Client Details Box
@@ -135,7 +137,7 @@ export const generateQuotePDF = (
   setTextColor(theme.textColor);
   doc.text(inputs.clientName || 'Valued Customer', 20, boxY + 6);
   if (inputs.clientAddress) doc.text(inputs.clientAddress, 20, boxY + 11);
-  if (inputs.clientContact) doc.text(inputs.clientContact, 20, boxY + 16);
+  if (inputs.clientContact) doc.text(`Phone: ${inputs.clientContact}`, 20, boxY + 16);
 
   // QUOTE DETAILS (Right Aligned)
   const rightX = pageWidth - 80;
@@ -157,16 +159,17 @@ export const generateQuotePDF = (
   drawDetailRow("Ref #:", inputs.serialNumber, 11);
   drawDetailRow("Valid Until:", inputs.expireDate, 16);
   if (inputs.quoteBy) drawDetailRow("Prepared By:", inputs.quoteBy, 21);
-
-  // Subject Line
+  
   let tableStartY = boxY + 35;
-  if (inputs.subject) {
-    doc.setFont(theme.font, "bold");
-    doc.setFontSize(10);
-    setTextColor(theme.secondaryColor);
-    doc.text(`Subject: ${inputs.subject}`, 20, boxY + 30);
-    tableStartY = boxY + 42;
+  if(inputs.subject) {
+      doc.setFont(theme.font, "bold");
+      setTextColor(theme.primaryColor);
+      doc.text("Subject:", 20, boxY + 25);
+      doc.setFont(theme.font, "normal");
+      setTextColor(theme.textColor);
+      doc.text(inputs.subject, 40, boxY + 25);
   }
+
 
   // --- DESCRIPTION GENERATOR ---
   const generateItemDescription = (item: QuoteItem) => {
@@ -261,18 +264,16 @@ export const generateQuotePDF = (
   };
 
   if (inputs.installationNeeded) {
-      const installDesc = `Installation Services\n` +
-                          `• Professional mounting & alignment\n` +
+      const installDesc = `• Professional mounting & alignment\n` +
                           `• Safety & Compliance (Work at heights)\n` +
                           `• Machinery Deployment (if required)`;
       addServiceRow("Installation Services", installDesc, inputs.installationCost);
   }
 
   if (inputs.transportationNeeded) {
-       const transportDesc = `Transportation & Logistics\n` +
-                             `• Safe delivery to site\n` +
+       const transportDesc = `• Safe delivery to site\n` +
                              `• Loading & Unloading`;
-       addServiceRow("Transportation", transportDesc, inputs.transportationCost);
+       addServiceRow("Transportation & Logistics", transportDesc, inputs.transportationCost);
   }
 
   if (inputs.artWorkCost > 0) addServiceRow("Artwork & Design", "Custom design as per client requirements", inputs.artWorkCost);
@@ -328,28 +329,42 @@ export const generateQuotePDF = (
 
   // --- FOOTER & SIGNATURE ---
   const lastY = (doc as any).lastAutoTable.finalY;
-  let footerY = lastY + 30;
+  let footerY = lastY + 20;
   
-  if (footerY > pageHeight - 50) {
+  if (footerY > pageHeight - 100) {
       doc.addPage();
       footerY = 40;
   }
 
-  // Terms & Conditions
-  doc.setFontSize(8);
-  doc.setFont(theme.font, 'bold');
-  setTextColor(theme.secondaryColor);
-  doc.text("TERMS & CONDITIONS:", 20, footerY);
-  doc.setFont(theme.font, 'normal');
-  doc.text([
-      "1. 50% Advance payment required to commence work.",
-      "2. Balance payment to be settled upon completion/delivery.",
-      "3. Quotation valid for 30 days.",
-      "4. Goods once sold are not returnable.",
-  ], 20, footerY + 5);
+  // Use PDF Settings from Admin if available, otherwise defaults
+  const settings = pricing.pdfSettings || { notes: '', bankDetails: '', terms: '', specialNote: '' };
+
+  // TERMS
+  if (settings.terms) {
+      doc.setFontSize(8);
+      doc.setFont(theme.font, 'bold');
+      setTextColor(theme.secondaryColor);
+      doc.text("TERMS & CONDITIONS:", 20, footerY);
+      doc.setFont(theme.font, 'normal');
+      const termLines = doc.splitTextToSize(settings.terms, pageWidth - 40);
+      doc.text(termLines, 20, footerY + 5);
+      footerY += (termLines.length * 4) + 10;
+  }
+
+  // BANK DETAILS
+  if (settings.bankDetails) {
+      doc.setFontSize(8);
+      doc.setFont(theme.font, 'bold');
+      setTextColor(theme.secondaryColor);
+      doc.text("BANK DETAILS:", 20, footerY);
+      doc.setFont(theme.font, 'normal');
+      const bankLines = doc.splitTextToSize(settings.bankDetails, pageWidth - 40);
+      doc.text(bankLines, 20, footerY + 5);
+      footerY += (bankLines.length * 4) + 10;
+  }
 
   // Signature Lines
-  const sigY = footerY + 30;
+  const sigY = Math.max(footerY + 10, pageHeight - 50);
   doc.setDrawColor(150);
   doc.setLineWidth(0.5);
   doc.line(20, sigY, 80, sigY); // Customer Sig
